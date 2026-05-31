@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-
+import bcrypt from 'bcryptjs'
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -35,6 +35,7 @@ const User = mongoose.model('User', userSchema)
 
 userSchema.pre('save', function (next) {
   const user = this
+  user.password = bcrypt.hashSync(user.password, 10)
   user.avatar = `https://robohash.org/${user.username}`
   next()
 })
