@@ -6,13 +6,18 @@ export async function signUpService(data) {
     const newUser = await userRepository.create(data)
     return newUser
   } catch (error) {
-    console.log('Signup service error: ', error)
+    // console.log('Signup service error: ', error.errors)
     if (error.name === 'ValidationError') {
       throw new ValidationError({ error: error.errors }, error.message)
     }
     if (error.name === 'MongoServerError' && error.code === 11000) {
       throw new ValidationError(
-        { error: 'Email or username already exists' },
+        {
+          error: {
+            message:
+              'Duplicate key error: A user with the same email or username already exists.'
+          }
+        },
         'Duplicate key error'
       )
     }

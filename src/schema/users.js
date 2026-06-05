@@ -31,13 +31,24 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 )
 
-const User = mongoose.model('User', userSchema)
+userSchema.pre('save', async function () {
+  try {
+    console.log('Pre-save hook triggered for user')
+    const user = this
+    if (user.isModified('password')) {
+      const salt = bcrypt.genSaltSync(10)
+      const hash = bcrypt.hashSync(user.password, salt)
+      user.password = hash
+    }
 
-userSchema.pre('save', function (next) {
-  const user = this
-  user.password = bcrypt.hashSync(user.password, 10)
-  user.avatar = `https://robohash.org/${user.username}`
-  next()
+    user.avatar = `https://robohash.org/${user.username}`
+    console.log('Avatar set to: ', user.avatar)
+    // next()
+  } catch (err) {
+    console.log('Error in pre-save hook: ', err)
+  }
 })
+
+const User = mongoose.model('User', userSchema)
 
 export default User
