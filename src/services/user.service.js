@@ -40,6 +40,15 @@ export async function signInService(data) {
         statusCode: StatusCodes.NOT_FOUND
       })
     }
+
+    if (user.username !== username) {
+      throw new ClientError({
+        explanation: 'Invalid data sent from the client.',
+        message: 'Invalid username',
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+
     const hashedPassword = user.password
 
     const isMatch = await bcrypt.compare(password, hashedPassword)
