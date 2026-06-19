@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 import jwt, { decode } from 'jsonwebtoken'
-import userRepository from '../repositories/userRepository.js'
+// import userRepository from '../repositories/userRepository.js'
 
 export function isAuthenticated(req, res, next) {
   try {
@@ -19,7 +19,7 @@ export function isAuthenticated(req, res, next) {
     }
     console.log('Decoded token: ', decoded)
 
-    req.userId = decoded.id
+    req.userId = decoded.userId
     req.username = decoded.username
 
     next()

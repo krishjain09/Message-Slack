@@ -79,7 +79,6 @@ export const workspaceRepository = {
       })
     }
     const channel = channelRepository.create({ channelName })
-
     workspace.channels.push(channel)
     await workspace.save()
     return workspace
