@@ -80,3 +80,15 @@ export async function signInService(data) {
     throw error
   }
 }
+
+export async function fetchuserByUsernameService(username) {
+  const user = await userRepository.getByUsername(username)
+  if (!user) {
+    throw new ClientError({
+      explanation: 'Invalid data sent from the client.',
+      message: 'User not found with the provided username.',
+      statusCode: StatusCodes.NOT_FOUND
+    })
+  }
+  return user
+}

@@ -28,7 +28,7 @@ workspaceRouter.get(
   fetchAllWorkspacesByMemberIdController
 )
 
-workspaceRouter.get(
+workspaceRouter.post(
   '/add-member',
   isAuthenticated,
   addMemberToWorkspaceController

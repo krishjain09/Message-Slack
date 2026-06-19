@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import Status from 'http-status-codes'
 import {
+  fetchUserByUsernameController,
   signInController,
   signUpController
 } from '../../controllers/user.controller.js'
@@ -24,3 +25,5 @@ userRouter.post(
   validateRequestBody(userSignInSchema),
   signInController
 )
+
+userRouter.get('/fetch-user', fetchUserByUsernameController)

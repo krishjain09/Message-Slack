@@ -1,4 +1,4 @@
-import { get } from 'mongoose'
+import mongoose from 'mongoose'
 import { Workspace } from '../schema/workspaces.js'
 import { crudRepository } from './crud.repository.js'
 import { ClientError } from '../utils/errors/clientError.js'
@@ -53,7 +53,12 @@ export const workspaceRepository = {
     }
 
     const validUser = workspace.members.push({ user: userId, role })
-    return await workspace.save()
+    console.log('Channels : ', workspace.channels)
+    await workspace.save()
+    await workspace.populate('channels')
+    await workspace.populate('members.user')
+
+    return workspace
   },
 
   addChannelToWorkspace: async function (workspaceId, channelName) {
@@ -78,13 +83,25 @@ export const workspaceRepository = {
         statusCode: StatusCodes.CONFLICT
       })
     }
-    const channel = channelRepository.create({ channelName })
+
+    const channel = await channelRepository.create({ name: channelName })
+
     workspace.channels.push(channel)
     await workspace.save()
+    await workspace.populate('channels')
+    await workspace.populate('members.user')
     return workspace
   },
 
   fetchAllWorkspacesByMemberId: async function (memberId) {
-    return await Workspace.find({ 'members.user': memberId })
+    console.log(memberId)
+    console.log(typeof memberId)
+    const workspace = await Workspace.find({
+      'members.user': new mongoose.Types.ObjectId(memberId)
+    })
+      .populate('members.user')
+      .populate('channels')
+    console.log(workspace)
+    return workspace
   }
 }

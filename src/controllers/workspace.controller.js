@@ -31,9 +31,10 @@ export async function fetchAllWorkspacesByMemberIdController(req, res) {
   const data = await fetchAllWorkspacesByMemberIdService(req.userId)
 
   res.status(StatusCodes.OK).json({
-    message: data
-      ? 'Fetched all workspaces successfully'
-      : 'User is not part of any workspace',
+    message:
+      data.length > 0
+        ? 'Fetched all workspaces successfully'
+        : 'User is not part of any workspace',
     data: data || [],
     status: 'Success'
   })
@@ -46,12 +47,12 @@ export async function addMemberToWorkspaceController(req, res) {
       owner: req.userId
     })
     res.status(StatusCodes.OK).json({
-      message: `Member added to ${response} successffully`,
+      message: `Member added to workspace ${response.name} successfully`,
       data: response,
       status: 'Success'
     })
   } catch (error) {
-    res.status(error.statusCode).json({
+    res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       name: error.name,
       message: error.message,
