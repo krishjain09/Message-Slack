@@ -137,5 +137,24 @@ export const workspaceRepository = {
     await workspace.populate('channels')
     await workspace.populate('members.user')
     return workspace
+  },
+  addChannelToWorkspace: async function (workspaceId, channelName) {
+    const workspace = await Workspace.findById(workspaceId).populate('channels')
+    for (let channel of workspace.channels) {
+      // console.log('Channel name : ', channel.name)
+      if (channel.name === channelName) {
+        throw new ClientError({
+          explanation: 'Invalid data sent from the client.',
+          message: 'Channel Already exists',
+          statusCode: StatusCodes.CONFLICT
+        })
+      }
+    }
+    const channel = await channelRepository.create({ name: channelName })
+    workspace.channels.push(channel)
+    await workspace.save()
+    await workspace.populate('channels')
+    await workspace.populate('members.user')
+    return workspace
   }
 }

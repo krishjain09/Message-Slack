@@ -3,6 +3,7 @@ import Status from 'http-status-codes'
 import { createWorkspaceSchema } from '../../validators/createWorkspaceSchema.js'
 import { isAuthenticated } from '../../middlewares/authMiddleware.js'
 import {
+  addChannelToWorkspaceController,
   addMemberToWorkspaceController,
   createWorkspaceController,
   fetchAllWorkspacesByMemberIdController,
@@ -39,4 +40,10 @@ workspaceRouter.post(
   '/remove-member',
   isAuthenticated,
   removeMemberFromWorkspaceController
+)
+
+workspaceRouter.post(
+  '/add-channel',
+  isAuthenticated,
+  addChannelToWorkspaceController
 )
