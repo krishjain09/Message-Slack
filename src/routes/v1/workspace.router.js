@@ -5,7 +5,8 @@ import { isAuthenticated } from '../../middlewares/authMiddleware.js'
 import {
   addMemberToWorkspaceController,
   createWorkspaceController,
-  fetchAllWorkspacesByMemberIdController
+  fetchAllWorkspacesByMemberIdController,
+  removeMemberFromWorkspaceController
 } from '../../controllers/workspace.controller.js'
 import { validateRequestBody } from '../../validators/zodValidator.js'
 
@@ -32,4 +33,10 @@ workspaceRouter.post(
   '/add-member',
   isAuthenticated,
   addMemberToWorkspaceController
+)
+
+workspaceRouter.post(
+  '/remove-member',
+  isAuthenticated,
+  removeMemberFromWorkspaceController
 )

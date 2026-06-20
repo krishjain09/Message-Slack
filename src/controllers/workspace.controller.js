@@ -1,17 +1,18 @@
 import {
   addMemberToWorkspaceService,
   createWorkspaceService,
-  fetchAllWorkspacesByMemberIdService
+  fetchAllWorkspacesByMemberIdService,
+  removeMemberFromWorkspaceService
 } from '../services/workspace.service.js'
 import { StatusCodes } from 'http-status-codes'
 export async function createWorkspaceController(req, res) {
   try {
-    console.log('I am here in createWorkspaceController')
-    console.log(req.body)
+    // console.log('I am here in createWorkspaceController')
+    // console.log(req.body)
     const data = { ...req.body, owner: req.userId }
 
     const newWorkspace = await createWorkspaceService(data)
-    console.log('New workspace : ', newWorkspace)
+    // console.log('New workspace : ', newWorkspace)
     res.status(StatusCodes.CREATED).json({
       message: 'Workspace created successfully',
       data: newWorkspace,
@@ -48,6 +49,27 @@ export async function addMemberToWorkspaceController(req, res) {
     })
     res.status(StatusCodes.OK).json({
       message: `Member added to workspace ${response.name} successfully`,
+      data: response,
+      status: 'Success'
+    })
+  } catch (error) {
+    res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      name: error.name,
+      message: error.message,
+      explanation: error.explanation
+    })
+  }
+}
+
+export async function removeMemberFromWorkspaceController(req, res) {
+  try {
+    const response = await removeMemberFromWorkspaceService({
+      ...req.body,
+      owner: req.userId
+    })
+    res.status(StatusCodes.OK).json({
+      message: `Member removed from workspace ${response.name} successfully`,
       data: response,
       status: 'Success'
     })

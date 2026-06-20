@@ -94,14 +94,48 @@ export const workspaceRepository = {
   },
 
   fetchAllWorkspacesByMemberId: async function (memberId) {
-    console.log(memberId)
-    console.log(typeof memberId)
     const workspace = await Workspace.find({
       'members.user': new mongoose.Types.ObjectId(memberId)
     })
       .populate('members.user')
       .populate('channels')
-    console.log(workspace)
+    return workspace
+  },
+
+  removeMemberFromWorkspace: async function (workspaceId, userId) {
+    let workspace = await Workspace.findById(workspaceId).populate('channels')
+    // console.log('Workspace details removeMemberFromWorkspaceRepo: ', workspace)
+    if (!workspace) {
+      throw new ClientError({
+        explanation: 'Invalid data sent from the client.',
+        message: 'Workspace not found',
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+
+    const isMemberPartOfWorkspace = workspace.members.find(
+      (member) => member.user.toString() === userId.toString()
+    )
+    if (!isMemberPartOfWorkspace) {
+      throw new ClientError({
+        explanation: 'Invalid data sent from the client.',
+        message: 'Member not found in workspace',
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+    workspace = await Workspace.findByIdAndUpdate(
+      workspaceId,
+      {
+        $pull: {
+          members: { user: userId }
+        }
+      },
+      { new: true }
+    )
+    // console.log('Workspace details after removing member: ', workspace)
+    await workspace.save()
+    await workspace.populate('channels')
+    await workspace.populate('members.user')
     return workspace
   }
 }
