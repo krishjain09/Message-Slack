@@ -3,7 +3,8 @@ import {
   createWorkspaceService,
   fetchAllWorkspacesByMemberIdService,
   removeMemberFromWorkspaceService,
-  addChannelToWorkspaceService
+  addChannelToWorkspaceService,
+  removeChannelFromWorkspaceService
 } from '../services/workspace.service.js'
 import { StatusCodes } from 'http-status-codes'
 export async function createWorkspaceController(req, res) {
@@ -92,6 +93,27 @@ export async function addChannelToWorkspaceController(req, res) {
     })
     res.status(StatusCodes.OK).json({
       message: `Channel added to workspace ${response.name} successfully`,
+      data: response,
+      status: 'Success'
+    })
+  } catch (error) {
+    res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      name: error.name,
+      message: error.message,
+      explanation: error.explanation
+    })
+  }
+}
+
+export async function removeChannelFromWorkspaceController(req, res) {
+  try {
+    const response = await removeChannelFromWorkspaceService({
+      ...req.body,
+      owner: req.userId
+    })
+    res.status(StatusCodes.OK).json({
+      message: `Channel removed from workspace ${response.name} successfully`,
       data: response,
       status: 'Success'
     })

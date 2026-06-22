@@ -141,7 +141,6 @@ export const workspaceRepository = {
   addChannelToWorkspace: async function (workspaceId, channelName) {
     const workspace = await Workspace.findById(workspaceId).populate('channels')
     for (let channel of workspace.channels) {
-      // console.log('Channel name : ', channel.name)
       if (channel.name === channelName) {
         throw new ClientError({
           explanation: 'Invalid data sent from the client.',
@@ -152,6 +151,32 @@ export const workspaceRepository = {
     }
     const channel = await channelRepository.create({ name: channelName })
     workspace.channels.push(channel)
+    await workspace.save()
+    await workspace.populate('channels')
+    await workspace.populate('members.user')
+    return workspace
+  },
+  removeChannelFromWorkspace: async function (workspaceId, channelName) {
+    let workspace = await Workspace.findById(workspaceId).populate('channels')
+    const channelToRemove = workspace.channels.find(
+      (channel) => channel.name === channelName
+    )
+    if (!channelToRemove) {
+      throw new ClientError({
+        explanation: 'Invalid data sent from the client.',
+        message: 'Channel not found in workspace',
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+    workspace = await Workspace.findByIdAndUpdate(
+      workspaceId,
+      {
+        $pull: {
+          channels: channelToRemove._id
+        }
+      },
+      { new: true }
+    )
     await workspace.save()
     await workspace.populate('channels')
     await workspace.populate('members.user')

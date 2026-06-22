@@ -7,6 +7,7 @@ import {
   addMemberToWorkspaceController,
   createWorkspaceController,
   fetchAllWorkspacesByMemberIdController,
+  removeChannelFromWorkspaceController,
   removeMemberFromWorkspaceController
 } from '../../controllers/workspace.controller.js'
 import { validateRequestBody } from '../../validators/zodValidator.js'
@@ -36,7 +37,7 @@ workspaceRouter.post(
   addMemberToWorkspaceController
 )
 
-workspaceRouter.post(
+workspaceRouter.delete(
   '/remove-member',
   isAuthenticated,
   removeMemberFromWorkspaceController
@@ -46,4 +47,10 @@ workspaceRouter.post(
   '/add-channel',
   isAuthenticated,
   addChannelToWorkspaceController
+)
+
+workspaceRouter.delete(
+  '/remove-channel',
+  isAuthenticated,
+  removeChannelFromWorkspaceController
 )

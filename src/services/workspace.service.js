@@ -209,11 +209,55 @@ export async function addChannelToWorkspaceService(data) {
         statusCode: StatusCodes.FORBIDDEN
       })
     }
-    
+
     const response = await workspaceRepository.addChannelToWorkspace(
       workspaceId,
       channelName
     )
+    return response
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      throw new ValidationError({ error: error.errors }, error.message)
+    }
+    throw error
+  }
+}
+
+export async function removeChannelFromWorkspaceService(data) {
+  try {
+    const { workspaceId, channelName, owner } = data
+
+    const workspace = await workspaceRepository.getById(workspaceId)
+    // console.log('Workspace details: ', workspace)
+    if (!workspace) {
+      throw new ClientError({
+        message: 'Workspace not found with the provided id.',
+        explanation: 'Invalid data sent from the client.',
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+    let admin = false
+    for (let member of workspace.members) {
+      if (
+        member.user.toString() === owner.toString() &&
+        member.role === 'admin'
+      ) {
+        admin = true
+        break
+      }
+    }
+    if (!admin) {
+      throw new ClientError({
+        message: 'Only admin can remove members from workspace.',
+        explanation: 'Invalid data sent from the client.',
+        statusCode: StatusCodes.FORBIDDEN
+      })
+    }
+    const response = await workspaceRepository.removeChannelFromWorkspace(
+      workspaceId,
+      channelName
+    )
+    // console.log('Response from removeChannelFromWorkspaceService: ', response)
     return response
   } catch (error) {
     if (error.name === 'ValidationError') {
