@@ -266,3 +266,26 @@ export async function removeChannelFromWorkspaceService(data) {
     throw error
   }
 }
+
+export async function fetchWorkspaceByJoinCodeService(joinCode) {
+  try {
+    const response = await workspaceRepository.getByJoinCode(joinCode)
+
+    if (!response) {
+      throw new ClientError({
+        message: 'Workspace not found with the provided join code.',
+        explanation: 'Invalid data sent from the client.',
+        statusCode: StatusCodes.NOT_FOUND
+      })
+    }
+    await response.populate('channels')
+    await response.populate('members.user')
+    return response
+  } catch (error) {
+    throw new ClientError({
+      message: 'Workspace not found with the provided join code.',
+      explanation: 'Invalid data sent from the client.',
+      statusCode: StatusCodes.NOT_FOUND
+    })
+  }
+}

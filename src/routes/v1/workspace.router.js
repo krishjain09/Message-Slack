@@ -7,6 +7,7 @@ import {
   addMemberToWorkspaceController,
   createWorkspaceController,
   fetchAllWorkspacesByMemberIdController,
+  fetchWorkspaceByJoinCodeController,
   removeChannelFromWorkspaceController,
   removeMemberFromWorkspaceController
 } from '../../controllers/workspace.controller.js'
@@ -31,7 +32,7 @@ workspaceRouter.get(
   fetchAllWorkspacesByMemberIdController
 )
 
-workspaceRouter.post(
+workspaceRouter.put(
   '/add-member',
   isAuthenticated,
   addMemberToWorkspaceController
@@ -43,7 +44,7 @@ workspaceRouter.delete(
   removeMemberFromWorkspaceController
 )
 
-workspaceRouter.post(
+workspaceRouter.put(
   '/add-channel',
   isAuthenticated,
   addChannelToWorkspaceController
@@ -53,4 +54,10 @@ workspaceRouter.delete(
   '/remove-channel',
   isAuthenticated,
   removeChannelFromWorkspaceController
+)
+
+workspaceRouter.get(
+  '/join-code/:joinCode',
+  isAuthenticated,
+  fetchWorkspaceByJoinCodeController
 )

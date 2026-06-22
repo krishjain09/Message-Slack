@@ -11,7 +11,7 @@ const PORT = process.env.PORT
 
 app.use(express.json())
 
-app.use('/api/v1',v1router)
+app.use('/api/v1', v1router)
 app.get('/ping', (req, res) => {
   res.status(STATUS.OK).send('Hello World!!!')
 })

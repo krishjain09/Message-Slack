@@ -4,7 +4,8 @@ import {
   fetchAllWorkspacesByMemberIdService,
   removeMemberFromWorkspaceService,
   addChannelToWorkspaceService,
-  removeChannelFromWorkspaceService
+  removeChannelFromWorkspaceService,
+  fetchWorkspaceByJoinCodeService
 } from '../services/workspace.service.js'
 import { StatusCodes } from 'http-status-codes'
 export async function createWorkspaceController(req, res) {
@@ -115,6 +116,26 @@ export async function removeChannelFromWorkspaceController(req, res) {
     res.status(StatusCodes.OK).json({
       message: `Channel removed from workspace ${response.name} successfully`,
       data: response,
+      status: 'Success'
+    })
+  } catch (error) {
+    res.status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      name: error.name,
+      message: error.message,
+      explanation: error.explanation
+    })
+  }
+}
+
+export async function fetchWorkspaceByJoinCodeController(req, res) {
+  try {
+    console.log('Req params', req.params)
+    const { joinCode } = req.params
+    const workspace = await fetchWorkspaceByJoinCodeService(joinCode)
+    res.status(StatusCodes.OK).json({
+      message: `Workspace fetched successfully`,
+      data: workspace,
       status: 'Success'
     })
   } catch (error) {
