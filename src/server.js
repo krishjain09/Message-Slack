@@ -1,11 +1,12 @@
 import express from 'express'
 import STATUS from 'http-status-codes'
-import dotenv from 'dotenv'
+import './config/envConfig.js'
 import mongoose from 'mongoose'
 import { connectDb } from './config/dbConfig.js'
 import { v1router } from './routes/v1/index.router.js'
-dotenv.config()
-
+import { transporter } from './config/mailerConfig.js'
+import { redisClient } from './config/redisConfig.js'
+import { emailWorker } from './processor/email.processor.js'
 const app = express()
 const PORT = process.env.PORT
 

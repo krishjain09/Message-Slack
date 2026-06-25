@@ -4,7 +4,7 @@ import { ValidationError } from '../utils/errors/validationerror.js'
 import { userRepository } from '../repositories/user.repository.js'
 import { ClientError } from '../utils/errors/clientError.js'
 import { StatusCodes } from 'http-status-codes'
-
+import { addEmailToQueue } from '../producers/mailer.producer.js'
 const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 6)
 
 export async function createWorkspaceService(workspaceData) {
@@ -126,6 +126,18 @@ export async function addMemberToWorkspaceService(data) {
     if (flag) {
       await workspaceRepository.addChannelToWorkspace(workspaceId, 'general')
     }
+    const member = response.members.find(
+      (member) => member.user._id.toString() === userId.toString()
+    )
+    const payload = {
+      to: member.user.email,
+      subject: 'You have been added to a workspace',
+      html: `<p>Hello ${member.user.username},</p>
+      <p>You have been added to the workspace <strong>${response.name}</strong> with the role of <strong>${role}</strong>.</p>
+      <p>Join the workspace using the following join code: <strong>${response.joinCode}</strong></p>`
+    }
+    console.log('Adding email to queue')
+    await addEmailToQueue(payload)
     return response
   } catch (error) {
     if (error.name === 'ValidationError') {
